@@ -1,0 +1,37 @@
+# docker compose file with services for the app, database and s3
+
+version: '3'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    entrypoint: docker/entrypoint.sh
+    stdin_open: true
+    tty: true
+    volumes:
+      - .:/app
+    depends_on:
+      - postgres
+      - s3
+  qa:
+    build:
+      context: .
+      dockerfile: ./lib/qa/Dockerfile
+    entrypoint: docker/entrypoint.sh
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./lib/qa:/app
+  postgres:
+    image: postgres:14.4
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - 5433:5432
+  s3:
+    image: scireum/s3-ninja
+    ports:
+      - "9444:9000"
