@@ -102,14 +102,14 @@ class Query:
                     self.items.append(f'filter[{arg}][]={val}')
             else:
                 match arg:
-                    case 'order':
-                        self.items.append(f'filter[order]={value}')
                     case 'page_size':
                         self.items.append(f'page[size]={value}')
                     case 'page_number':
                         self.items.append(f'page[number]={value}')
-                    case _:
+                    case ('key' | 'digest'):
                         self.items.append(f'{arg}={value}')
+                    case _:
+                        self.items.append(f'filter[{arg}]={value}')
         return self
 
     def add_auth(self, api_key, digest):

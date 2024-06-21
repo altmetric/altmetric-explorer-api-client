@@ -11,7 +11,11 @@ from . import api
     ({'mention_source_countries': ['JP', 'CN']},
         'filter[mention_source_countries][]=JP&filter[mention_source_countries][]=CN'),
     ({'mention_source_countries': ('JP', 'CN')},
-        'filter[mention_source_countries][]=JP&filter[mention_source_countries][]=CN')
+        'filter[mention_source_countries][]=JP&filter[mention_source_countries][]=CN'),
+    ({'timeframe': '3d'},
+        'filter[timeframe]=3d'),
+    ({'foo': 'bar', 'key': 'key123', 'digest': 'digestabc'},
+            'filter[foo]=bar&key=key123&digest=digestabc')
 ])
 def test_query_string(params, query_string):
     assert str(api.Query(**params)) == query_string
