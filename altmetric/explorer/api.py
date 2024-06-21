@@ -40,45 +40,37 @@ def digest(secret, message):
     return signature
 
 
-class FilterList:
-    '''Stores a list of filters and provides accessor methods for use when
-    calculating a digest or generating valid URL parameters.
+class Filters:
+    def __init__(self):
+        self.items = []
 
-    TODO: At the moment, this class assumes (in __str__()) that all filters are
-    encoded as URL query parameters in the form `filter[attr][]=value` but this
-    is not the case for all the possible filters so this class needs to be
-    changed to support filters in the form `filter[attr]=value`
-    (note the missing []) as well.
-    '''
+    def add_filter(self, arg, value):
+        self.items.append((arg, value))
+        return self
 
-    def __init__(self, filters):
-        '''Initialise a FilterList'''
-        self.filters = filters
+    def __len__(self):
+        return len(self.items)
 
     def message(self):
-        '''Generates a message string that can be used to calculate a message
-        digest for authentication purposes.'''
         result = []
-        for attr, values in groupby(self.filters, lambda t: t[0]):
-            result.append(attr)
-            for _, value in values:
+        for arg, value in sorted(self.items):
+            result.append(arg)
+            if type(value) in (list, tuple, set):
+                for val in value:
+                    result.append(val)
+            else:
                 result.append(value)
         return '|'.join(result)
 
-    def params(self):
-        '''Returns a URL query parameter string. Alias for the __str__ method.
-        '''
-        return str(self)
-
     def __str__(self):
-        '''Converts the filters to URL query parameters in the
-        form filter1=xxxx&filter2=yyyy.
-        '''
-        return '&'.join(f'filter[{attr}][]={value}' for attr, value in self.filters)
-
-    def __iter__(self):
-        '''Returns an iterator that yields the filters as key-value pairs'''
-        return iter(self.filters)
+        result = []
+        for arg, value in self.items:
+            if type(value) == list or type(value) == tuple:
+                for val in value:
+                    result.append(f'filter[{arg}][]={val}')
+            else:
+                result.append(f'filter[{arg}]={value}')
+        return '&'.join(result)
 
 
 class Query:
@@ -88,6 +80,7 @@ class Query:
     def __init__(self, **kvargs):
         '''Initialise a Query with an initial set of params'''
         self.items = []
+        self.filters = Filters()
         self.add_params(**kvargs)
 
     def add_params(self, **kvargs):
@@ -97,19 +90,17 @@ class Query:
             Query: self
         """
         for arg, value in kvargs.items():
-            if type(value) == list or type(value) == tuple:
-                for val in value:
-                    self.items.append(f'filter[{arg}][]={val}')
-            else:
-                match arg:
-                    case 'page_size':
-                        self.items.append(f'page[size]={value}')
-                    case 'page_number':
-                        self.items.append(f'page[number]={value}')
-                    case ('key' | 'digest'):
-                        self.items.append(f'{arg}={value}')
-                    case _:
-                        self.items.append(f'filter[{arg}]={value}')
+            match arg:
+                case 'page_size':
+                    self.items.append(f'page[size]={value}')
+                case 'page_number':
+                    self.items.append(f'page[number]={value}')
+                case 'order':
+                    self.items.append(f'filter[order]={value}')
+                case ('key' | 'digest'):
+                    self.items.append(f'{arg}={value}')
+                case _:
+                    self.filters.add_filter(arg, value)
         return self
 
     def add_auth(self, api_key, digest):
@@ -145,7 +136,15 @@ class Query:
         Notes:
             The string created is not URL encoded
         """
-        return "&".join(self.items)
+        result = []
+
+        if self.items:
+            result.append("&".join(self.items))
+
+        if self.filters:
+            result.append(str(self.filters))
+
+        return '&'.join(result)
 
 
 class Client:
@@ -173,7 +172,7 @@ class Client:
         self.api_key = api_key
         self.api_secret = api_secret
 
-    def get(self, path, filters=(), page_size=100, order=None, limit=None):
+    def get(self, path, **args):
         """Generic get method that constructs a call to an API path and returns the data returned. An authentication digest is calculated behind the scenes using the
         api keys instance variables and the filters provided and added to the request automatically.
 
@@ -200,14 +199,10 @@ class Client:
             first page and a generator that yields `data` objects lazily so that the caller can decide how much to pull
             back.
         """
-        filters = FilterList(filters)
-        query = Query(
-            page_size=page_size,
-            order=order
-        )
+        limit = args.pop('limit', None)
+        query = Query(**args)
         query.add_auth(self.api_key,
-                       digest(self.api_secret, filters.message()))
-        query.add_str(filters)
+                       digest(self.api_secret, query.filters.message()))
 
         url = self.api_endpoint + '/' + path + '?' + str(query)
 
@@ -243,13 +238,13 @@ class Client:
         response = requests.get(url)
         return response.json().get('meta', {})
 
-    def get_mention_sources(self, filters=(), page_size=100, order=None, limit=None):
+    def get_mention_sources(self, **args):
         '''
         Shorthand accessor for 'research_outputs/mention_sources'
 
         TODO: passing the parameters explicitly here is ugly and verbose.  DRY this up somehow.
         '''
-        return self.get('research_outputs/mention_sources', filters, page_size, order, limit)
+        return self.get('research_outputs/mention_sources', **args)
 
     def get_mention_sources_meta_response(self, filters=()):
         '''
@@ -261,13 +256,13 @@ class Client:
 
         return self.get_meta('research_outputs/mention_sources', filters).get('response', None)
 
-    def get_mentions(self, filters=(), page_size=100, order=None, limit=None):
+    def get_mentions(self, **args):
         '''
         Shorthand accessor for 'research_outputs/mentions'
 
         TODO: passing the parameters explicitly here is ugly and verbose.  DRY this up somehow.
         '''
-        return self.get('research_outputs/mentions', filters, page_size, order, limit)
+        return self.get('research_outputs/mentions', **args)
 
     def get_mentions_meta_response(self, filters=()):
         '''

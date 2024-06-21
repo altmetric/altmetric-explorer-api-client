@@ -17,11 +17,9 @@ api_client = Client(
 print(f'INFO : querying explorer API for policy blog sources', file=sys.stderr)
 
 result = api_client.get_mention_sources(
-    filters={
-        'mention_sources_types':  ['type:policy', 'type:blog'],
-        'timeframe': 'at'
-    },
-    order='profile-type')
+    order='profile-type',
+    mention_sources_types=['type:policy', 'type:blog'],
+    timeframe='at')
 
 print(f'INFO : found {len(result)} policy blog sources', file=sys.stderr)
 
