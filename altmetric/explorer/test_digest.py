@@ -1,13 +1,13 @@
 import pytest
 
 from . import api
-from ..credentials import API_SECRET
 
+API_SECRET = 'my_secret_key'
 
 @pytest.mark.parametrize("message,expected", [
-    ('', '53534093d456666d5e3fcc8264a21b27acacf494'),
-    (None, '53534093d456666d5e3fcc8264a21b27acacf494'),
-    ('foo', '89ff9c9e3e6bd43bd0fde6235da2aa913290291d'),
+    ('', '4b4f493acb45332879e4812a98473fc98209fee6'),
+    (None, '4b4f493acb45332879e4812a98473fc98209fee6'),
+    ('foo', '155ce81b88766ccd779d515af9ab6081586f077f'),
 ])
 def test_calculating_a_digest(message, expected):
     assert api.digest(API_SECRET, message) == expected
