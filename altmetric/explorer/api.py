@@ -97,15 +97,19 @@ class Query:
             Query: self
         """
         for arg, value in kvargs.items():
-            match arg:
-                case 'order':
-                    self.items.append(f'filter[order]={value}')
-                case 'page_size':
-                    self.items.append(f'page[size]={value}')
-                case 'page_number':
-                    self.items.append(f'page[number]={value}')
-                case _:
-                    self.items.append(f'{arg}={value}')
+            if type(value) == list or type(value) == tuple:
+                for val in value:
+                    self.items.append(f'filter[{arg}][]={val}')
+            else:
+                match arg:
+                    case 'order':
+                        self.items.append(f'filter[order]={value}')
+                    case 'page_size':
+                        self.items.append(f'page[size]={value}')
+                    case 'page_number':
+                        self.items.append(f'page[number]={value}')
+                    case _:
+                        self.items.append(f'{arg}={value}')
         return self
 
     def add_auth(self, api_key, digest):
