@@ -77,6 +77,7 @@ class Client:
                 page_size (int, optional): size of each page to be returned. Defaults to 100.
                 order (string, optional): the field on which the results should be sorted. Defaults to None.
                 limit (int, optional): maximum number of items to return.  Set to None to return everything. Defaults to None.
+
                 All other keyword arguments are treated as filters e.g. timeframe, mention_sources_countries
 
         Returns:
@@ -90,14 +91,9 @@ class Client:
         return Response(all_pages(url))
 
     def get_mention_sources(self, **args):
-        '''
-        Shorthand accessor for 'research_outputs/mention_sources'
-        '''
+        ''' Shorthand accessor for research_outputs/mention_sources '''
         return self.get('research_outputs/mention_sources', **args)
 
     def get_mentions(self, **args):
-        '''
-        Shorthand accessor for 'research_outputs/mentions'
-
-        '''
+        ''' Shorthand accessor for research_outputs/mentions '''
         return self.get('research_outputs/mentions', **args)
