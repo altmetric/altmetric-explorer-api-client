@@ -1,7 +1,7 @@
 import base64
-from itertools import groupby
-import hmac
 import hashlib
+import hmac
+import itertools
 
 import requests
 
@@ -41,6 +41,8 @@ def digest(secret, message):
 
 
 class Filters:
+    '''Holds a list of filters and provides accessors to the authentication message string as well
+       as the query string itself.'''
     def __init__(self):
         self.items = []
 
@@ -146,6 +148,22 @@ class Query:
 
         return '&'.join(result)
 
+class Response:
+    """The response object that holds onto the meta data and data iterator
+    """
+
+    def __init__(self, all_pages):
+        self.data_iterator, self.meta_iterator = itertools.tee(all_pages)
+        self.first_page = next(self.meta_iterator)
+
+    def data(self):
+        for page in self.data_iterator:
+            for row in page.get('data'):
+                yield row
+
+    def meta(self):
+        return self.first_page["meta"]["response"]
+
 
 class Client:
     """Top level abstraction over the Altmetric Explorer API.
@@ -173,102 +191,36 @@ class Client:
         self.api_secret = api_secret
 
     def get(self, path, **args):
-        """Generic get method that constructs a call to an API path and returns the data returned. An authentication digest is calculated behind the scenes using the
+        """Generic get method that constructs a call to an API path and returns a Response. An authentication digest is calculated behind the scenes using the
         api keys instance variables and the filters provided and added to the request automatically.
 
         Args:
             path (string): the path to query
-            filters (tuple, optional): tuple containing filters. Defaults to ().
-            page_size (int, optional): size of each page to be returned. Defaults to 100.
-            order (string, optional): the field on which the results should be sorted. Defaults to None.
-            limit (int, optional): maximum number of items to return.  Set to None to return everything. Defaults to None.
+            args (keyword list, accepts the following):
+                page_size (int, optional): size of each page to be returned. Defaults to 100.
+                order (string, optional): the field on which the results should be sorted. Defaults to None.
+                limit (int, optional): maximum number of items to return.  Set to None to return everything. Defaults to None.
+                All other keyword arguments are treated as filters e.g. timeframe, mention_sources_countries
 
         Returns:
-            data: contents of the `data` keys from all the pages returned or up to
-            the number of items specified by the `limit` parameter.
-
-        TODO:
-            This design sucks.  The idea of returning everything was all we needed for the Jupyter notebooks that this
-            class grew out of but defaulting to returning everything is a really bad idea in the long term - especially
-            when we already get the results as a (lazy) generator from the `all_pages` function.
-
-            Adding the `limit` parameter is a bit of a workaround but it is artificial and adds extra responsibilities
-            to this class.
-
-            It would be much better to return response object that includes the `meta` object from the
-            first page and a generator that yields `data` objects lazily so that the caller can decide how much to pull
-            back.
+            response: A Response object for the API call.
         """
-        limit = args.pop('limit', None)
         query = Query(**args)
         query.add_auth(self.api_key,
                        digest(self.api_secret, query.filters.message()))
-
         url = self.api_endpoint + '/' + path + '?' + str(query)
 
-        result = []
-        for page in all_pages(url):
-            data = page.get('data', [])
-            total_rows = len(data) + len(result)
-            if limit and total_rows > limit:
-                remainder = len(data) - (total_rows - limit)
-                result += data[0:remainder]
-                break
-            else:
-                result += data
-
-        return result
-
-    def get_meta(self, path, filters=()):
-        """
-        The `meta` tag sometimes includes useful information like the number of
-        rows returned by the query.
-
-        TODO: This method was a quick and dirty way of exposing the `meta` data
-        but it should be replaced by a proper response object as described in
-        the doc string for `get` above.
-        """
-        filters = FilterList(filters)
-        query = Query()
-        query.add_auth(self.api_key, digest(
-            self.api_secret, filters.message()))
-        query.add_str(filters)
-
-        url = self.api_endpoint + '/' + path + '?' + str(query)
-        response = requests.get(url)
-        return response.json().get('meta', {})
+        return Response(all_pages(url))
 
     def get_mention_sources(self, **args):
         '''
         Shorthand accessor for 'research_outputs/mention_sources'
-
-        TODO: passing the parameters explicitly here is ugly and verbose.  DRY this up somehow.
         '''
         return self.get('research_outputs/mention_sources', **args)
-
-    def get_mention_sources_meta_response(self, filters=()):
-        '''
-        Shorthand accessor for the meta data from 'research_outputs/mention_sources'
-
-        TODO: Make `get` return a response object and add a `meta` method to it as described
-        above so we can delete this method.
-        '''
-
-        return self.get_meta('research_outputs/mention_sources', filters).get('response', None)
 
     def get_mentions(self, **args):
         '''
         Shorthand accessor for 'research_outputs/mentions'
 
-        TODO: passing the parameters explicitly here is ugly and verbose.  DRY this up somehow.
         '''
         return self.get('research_outputs/mentions', **args)
-
-    def get_mentions_meta_response(self, filters=()):
-        '''
-        Shorthand accessor for the meta data from 'research_outputs/mentions'
-
-        TODO: Make `get` return a response object and add a `meta` method to it as described
-        above so we can delete this method.
-        '''
-        return self.get_meta('research_outputs/mentions', filters).get('response', None)
