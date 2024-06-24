@@ -16,15 +16,13 @@ api_client = Client(
 
 print(f'INFO : querying explorer API for policy blog sources', file=sys.stderr)
 
-result = api_client.get_mention_sources(
+response = api_client.get_mention_sources(
     order='profile-type',
     mention_sources_types=['type:policy', 'type:blog'],
     timeframe='at')
 
-print(f'INFO : found {len(result)} policy blog sources', file=sys.stderr)
+meta = response.meta()
+print(f'INFO : got metadata: {repr(meta)}', file=sys.stderr)
 
-meta_response = api_client.get_mention_sources_meta_response(
-    filters=[('mention_sources_types', 'type:policy'),
-             ('mention_sources_types', 'type:blog')])
-
-print(f'INFO : got meta response {meta_response}', file=sys.stderr)
+data = list(response.data())
+print(f'INFO : found {len(data)} policy blog sources', file=sys.stderr)
