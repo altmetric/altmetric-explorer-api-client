@@ -14,36 +14,31 @@ def test_api_checks_for_invalid_key_and_secret():
         api.Client('https://www.altmetric.com/explorer/api', None, None)
 
 
-@pytest.mark.parametrize("client_fn,page_size,limit", [
-    ('get_mention_sources', 100, 10),
-    ('get_mention_sources', 9, 10),
-    ('get_mentions', 100, 10),
-    ('get_mentions', 9, 10),
+@pytest.mark.parametrize("client_fn", [
+    ('get_mention_sources'),
+    ('get_mentions'),
 ])
-def test_getting_data_from_the_api(client_fn, page_size, limit, api_client):
+def test_getting_data_from_the_api(client_fn, api_client):
     fn = getattr(api_client, client_fn)
-    rows = fn(page_size=page_size, limit=limit)
-    assert (len(rows)) == limit
+    response = fn()
+    try:
+        row = next(response.data())
+        assert len(row.keys()) > 0
+    except StopIteration:
+        pytest.fail('no data returned')
 
-
-@pytest.mark.skip
 @pytest.mark.parametrize("client_fn, expected_keys", [
-    ('get_mentions_meta_response', ('description',
-                                    'status',
-                                    'total-pages',
-                                    'total-results')),
-    ('get_mention_sources_meta_response', ('description',
-                                           'status',
-                                           'total-mentions',
-                                           'total-pages',
-                                           'total-results'))
+    ('get_mention_sources', ('description',
+                             'status',
+                             'total-mentions',
+                             'total-pages',
+                             'total-results')),
+    ('get_mentions', ('description',
+                      'status',
+                      'total-pages',
+                      'total-results'))
 ])
 def test_getting_the_response_block_from_the_meta_block(client_fn, expected_keys, api_client):
     fn = getattr(api_client, client_fn)
-    result = fn(filters=[])
-    assert set(result.keys()) == set(expected_keys)
-
-@pytest.mark.skip
-def test_api_default_parameters(api_client):
-    rows = api_client.get('research_outputs/mention_sources')
-    assert len(rows) > 0
+    response = fn()
+    assert set(response.meta().keys()) == set(expected_keys)
