@@ -23,8 +23,8 @@ def test_getting_data_from_the_api(client_fn, api_client):
     fn = getattr(api_client, client_fn)
     response = fn(page_size=1)  # return a tiny page so tests run quickly
     try:
-        row = next(response.data())
-        assert len(row.keys()) > 0
+        assert len(next(response.data()).keys()) > 0
+        assert len(next(response.data()).keys()) > 0  # from second page
     except StopIteration:
         pytest.fail('no data returned')
 
