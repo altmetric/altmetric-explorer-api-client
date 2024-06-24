@@ -1,3 +1,4 @@
+import itertools
 import sys
 
 from altmetric.explorer.api.client import all_pages
@@ -6,7 +7,7 @@ URL = 'https://www.altmetric.com/explorer/api/research_outputs/mention_sources?d
 
 
 def each_row(url, page_size=100):
-    i = 0
+    i = 1
     url = url + f'&page[size]={page_size}'
 
     for page in all_pages(url):
@@ -17,3 +18,4 @@ def each_row(url, page_size=100):
 
 
 rows = each_row(URL, page_size=2)
+print(list(itertools.islice(rows, 10)))
