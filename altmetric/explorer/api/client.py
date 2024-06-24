@@ -1,9 +1,11 @@
 import base64
 import hashlib
 import hmac
-import itertools
 
 import requests
+
+from .query import Query
+from .response import Response
 
 
 def all_pages(url):
@@ -38,131 +40,6 @@ def digest(secret, message):
     signature = base64.b64encode(hmac_sha1.digest()).decode('utf-8')
     signature = hmac_sha1.hexdigest()
     return signature
-
-
-class Filters:
-    '''Holds a list of filters and provides accessors to the authentication message string as well
-       as the query string itself.'''
-    def __init__(self):
-        self.items = []
-
-    def add_filter(self, arg, value):
-        self.items.append((arg, value))
-        return self
-
-    def __len__(self):
-        return len(self.items)
-
-    def message(self):
-        result = []
-        for arg, value in sorted(self.items):
-            result.append(arg)
-            if type(value) in (list, tuple, set):
-                for val in value:
-                    result.append(val)
-            else:
-                result.append(value)
-        return '|'.join(result)
-
-    def __str__(self):
-        result = []
-        for arg, value in self.items:
-            if type(value) == list or type(value) == tuple:
-                for val in value:
-                    result.append(f'filter[{arg}][]={val}')
-            else:
-                result.append(f'filter[{arg}]={value}')
-        return '&'.join(result)
-
-
-class Query:
-    '''Builder class that builds up a list of parameters to be passed to an
-    API endpoint and generates a URL query string'''
-
-    def __init__(self, **kvargs):
-        '''Initialise a Query with an initial set of params'''
-        self.items = []
-        self.filters = Filters()
-        self.add_params(**kvargs)
-
-    def add_params(self, **kvargs):
-        """Add parameter(s) to the query
-
-        Returns:
-            Query: self
-        """
-        for arg, value in kvargs.items():
-            match arg:
-                case 'page_size':
-                    self.items.append(f'page[size]={value}')
-                case 'page_number':
-                    self.items.append(f'page[number]={value}')
-                case 'order':
-                    self.items.append(f'filter[order]={value}')
-                case ('key' | 'digest'):
-                    self.items.append(f'{arg}={value}')
-                case _:
-                    self.filters.add_filter(arg, value)
-        return self
-
-    def add_auth(self, api_key, digest):
-        """Add authorisation fields the query
-
-        Args:
-            api_key (string): public API key (NOT the secret)
-            digest (string): digest calculated using the filters and the secret key
-
-        Returns:
-            Query: self
-        """
-        return self.add_params(key=api_key, digest=digest)
-
-    def add_str(self, item):
-        """Add an arbitrary item to the query in the form `param=value`
-
-        Args:
-            item (Object): any object that responds to __str__ and returns a valid query string
-
-        Returns:
-            Query: self
-        """
-        self.items.append(str(item))
-        return self
-
-    def __str__(self):
-        """Compile a URL query string from the items provided to the builder methods.
-
-        Returns:
-            string: the URL query string
-
-        Notes:
-            The string created is not URL encoded
-        """
-        result = []
-
-        if self.items:
-            result.append("&".join(self.items))
-
-        if self.filters:
-            result.append(str(self.filters))
-
-        return '&'.join(result)
-
-class Response:
-    """The response object that holds onto the meta data and data iterator
-    """
-
-    def __init__(self, all_pages):
-        self.data_iterator, self.meta_iterator = itertools.tee(all_pages)
-        self.first_page = next(self.meta_iterator)
-
-    def data(self):
-        for page in self.data_iterator:
-            for row in page.get('data'):
-                yield row
-
-    def meta(self):
-        return self.first_page["meta"]["response"]
 
 
 class Client:

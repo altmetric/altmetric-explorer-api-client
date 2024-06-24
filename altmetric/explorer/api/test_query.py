@@ -1,6 +1,6 @@
 import pytest
 
-from . import api
+from .query import Query
 
 
 @pytest.mark.parametrize('params,query_string', [
@@ -19,8 +19,9 @@ from . import api
         'key=key123&digest=digestabc&filter[foo]=bar')
 ])
 def test_query_string(params, query_string):
-    assert str(api.Query(**params)) == query_string
-    assert str(api.Query().add_params(**params)) == query_string
+    assert str(Query(**params)) == query_string
+    assert str(Query().add_params(**params)) == query_string
+
 
 @pytest.mark.parametrize('params,message', [
     ({}, ''),
@@ -30,20 +31,20 @@ def test_query_string(params, query_string):
     ({'page_number': 4}, ''),
     ({'page_size': 100, 'page_number': 9}, ''),
     ({'order': 'some_field'}, ''),
-    ({'list': ['a','b','c']}, 'list|a|b|c'),
-    ({'list': ['c','b','a']}, 'list|c|b|a'), # param values do not need to be sorted alphabetically
-    ({'list': ('a','b','c')}, 'list|a|b|c'),
+    ({'list': ['a', 'b', 'c']}, 'list|a|b|c'),
+    # param values do not need to be sorted alphabetically
+    ({'list': ['c', 'b', 'a']}, 'list|c|b|a'),
+    ({'list': ('a', 'b', 'c')}, 'list|a|b|c'),
 
 ])
 def test_message(params, message):
-    query = api.Query(**params)
+    query = Query(**params)
     assert query.filters.message() == message
 
+
 def test_message_supports_sets():
-    query = api.Query(list = set(['a','b','c']))
+    query = Query(list=set(['a', 'b', 'c']))
     response = query.filters.message()
     array = response.split('|')
     assert array[0] == 'list'
     assert set(array[1:4]) == set(['a', 'b', 'c'])
-
-
