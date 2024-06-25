@@ -17,11 +17,11 @@ client = api.Client('https://www.altmetric.com/explorer/api', API_KEY, API_SECRE
 response = client.get_mention_sources()
 
 # response.meta returns the meta.response JSON object as a python dict
-print(response.meta())
+print(response.meta)
 
 # response.data() returns a python generator that yields one row of data at
 # a time.  Paging is handled behind the scenes.
-for item in response.data():
+for item in response.data:
   print(item)
 ```
 
@@ -30,28 +30,15 @@ executing `python -m examples.<example_name>`
 
 ## Installation
 
-Install the dependencies needed to query the api:
+A [docker compose](https://docs.docker.com/compose/) file is included to setup a development environment in docker that runs a Jupyter Labs server so you can experiment with the api.
 
-```sh
-pip install -r requirements.txt
-```
-
-If you want to run the tests, you also need to install the development dependencies:
-
-```sh
-pip install -r requirements.dev.txt
-```
-
-Alternatively, a docker compose file is available to setup a development environment in docker.  Start it by running:
+Start it by running:
 
 ```sh
 docker compose up # add the -d flag to run in the background
 ```
 
-## Useful Python Links
-
-* Generators: https://realpython.com/introduction-to-python-generators/
-* Iterators: https://realpython.com/python-iterators-iterables/
+Then visit http://localhost:8888/lab/tree/getting_started.ipynb and follow the instructions in the notebook to learn how to use the API client/
 
 
 
