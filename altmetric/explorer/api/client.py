@@ -8,25 +8,6 @@ from .query import Query
 from .response import Response
 
 
-def all_pages(url):
-    '''Returns a generator that lazily yields all the pages returned by a
-    request to the Explorer API.  The next page is found by looking for
-    the links.next key in an API response.  If the key is found then
-    the current page will be yielded by and the next page URL will be cached
-    for the next time the generator is called.  Otherwise the page will be yielded
-    and the generator will close.
-    '''
-    while url:
-        response = requests.get(url)
-        if response.status_code != requests.codes.ok:
-            raise Exception(f'{url} returned {response.status_code}')
-
-        page = response.json()
-        url = page.get('links', {}).get('next', None)
-
-        yield page
-
-
 def digest(secret, message):
     '''Calculates a cryptographic digest based on the user's API secret key and
     the values of some of the parameters as described here:
@@ -88,7 +69,7 @@ class Client:
                        digest(self.api_secret, query.filters.message()))
         url = self.api_endpoint + '/' + path + '?' + str(query)
 
-        return Response(all_pages(url))
+        return Response(requests.get(url))
 
     def get_mention_sources(self, **args):
         ''' Shorthand accessor for research_outputs/mention_sources '''
