@@ -68,6 +68,7 @@ class Response:
         Args:
             raw_response (requests.response): a response from a call to the api using the `requests` HTTP library
         '''
+        self.raw_response = raw_response
         self.first_page = Page(raw_response)
 
     @ property
