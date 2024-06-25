@@ -14,7 +14,38 @@ API_KEY = 'abababababababab'
 API_SECRET = 'cdcdcdcdcdcdcdcd'
 
 client = api.Client('https://www.altmetric.com/explorer/api', API_KEY, API_SECRET)
-client.get_mention_sources()
+response = client.get_mention_sources()
+
+# response.meta returns the meta.response JSON object as a python dict
+print(response.meta())
+
+# response.data() returns a python generator that yields one row of data at
+# a time.  Paging is handled behind the scenes.
+for item in response.data():
+  print(item)
+```
+
+See the code in [examples/](examples/) for more examples.  You can run them by
+executing `python -m examples.<example_name>`
+
+## Installation
+
+Install the dependencies needed to query the api:
+
+```sh
+pip install -r requirements.txt
+```
+
+If you want to run the tests, you also need to install the development dependencies:
+
+```sh
+pip install -r requirements.dev.txt
+```
+
+Alternatively, a docker compose file is available to setup a development environment in docker.  Start it by running:
+
+```sh
+docker compose up # add the -d flag to run in the background
 ```
 
 ## Useful Python Links
