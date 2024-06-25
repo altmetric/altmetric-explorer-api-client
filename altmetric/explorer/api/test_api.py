@@ -22,9 +22,11 @@ def test_api_checks_for_invalid_key_and_secret():
 def test_getting_data_from_the_api(client_fn, api_client):
     fn = getattr(api_client, client_fn)
     response = fn(page_size=1)  # return a tiny page so tests run quickly
+
+    assert response.status_code == 200
     try:
-        assert len(next(response.data()).keys()) > 0
-        assert len(next(response.data()).keys()) > 0  # from second page
+        assert len(next(response.data).keys()) > 0
+        assert len(next(response.data).keys()) > 0  # from second page
     except StopIteration:
         pytest.fail('no data returned')
 
@@ -43,4 +45,4 @@ def test_getting_data_from_the_api(client_fn, api_client):
 def test_getting_the_response_block_from_the_meta_block(client_fn, expected_keys, api_client):
     fn = getattr(api_client, client_fn)
     response = fn(page_size=1)  # return a tiny page so tests run quickly
-    assert set(response.meta().keys()) == set(expected_keys)
+    assert set(response.meta.keys()) == set(expected_keys)
