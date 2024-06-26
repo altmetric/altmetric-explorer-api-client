@@ -18,6 +18,7 @@ def test_api_checks_for_invalid_key_and_secret():
 @pytest.mark.parametrize("client_fn", [
     ('get_attention_summary'),
     ('get_demographics'),
+    ('get_journals'),
     ('get_mention_sources'),
     ('get_mentions'),
 ])
@@ -42,6 +43,10 @@ def test_getting_data_from_the_api(client_fn, api_client):
                           'status',
                           'total-pages',
                           'total-results')),
+    ('get_journals', ('description',
+                      'status',
+                      'total-pages',
+                      'total-results')),
     ('get_mention_sources', ('description',
                              'status',
                              'total-mentions',
