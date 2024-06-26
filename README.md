@@ -38,7 +38,30 @@ Start it by running:
 docker compose up # add the -d flag to run in the background
 ```
 
-Then visit http://localhost:8888/lab/tree/getting_started.ipynb and follow the instructions in the notebook to learn how to use the API client/
+Then visit http://localhost:8888/lab/tree/getting_started.ipynb and follow the instructions in the notebook to learn how to use the API client.
 
+If you have any problems, a good first step is to re-start docker compose with the `--build` option so that the api container is re-built from scratch.
+
+```sh
+docker compose down
+docker compose up --build
+```
+
+## For Developers
+
+The tests are written using [pytest](https://docs.pytest.org/).
+
+Run them by starting the docker compose network as described above and then...
+
+```sh
+docker compose exec app /bin/sh
+pytest
+```
+
+or, from the host...
+
+```sh
+docker compose exec app pytest
+```
 
 
