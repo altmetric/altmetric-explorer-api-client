@@ -71,6 +71,10 @@ class Client:
 
         return Response(requests.get(url))
 
+    def get_attention_summary(self, **args):
+        '''Shorthand accessor for research_outputs/attention'''
+        return self.get('research_outputs/attention', **args)
+
     def get_mention_sources(self, **args):
         ''' Shorthand accessor for research_outputs/mention_sources '''
         return self.get('research_outputs/mention_sources', **args)

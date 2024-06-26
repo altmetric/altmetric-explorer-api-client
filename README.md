@@ -35,7 +35,7 @@ Start it by running:
 docker compose up # add the -d flag to run in the background
 ```
 
-Then visit http://localhost:8888/lab/tree/getting_started.ipynb and follow the instructions in the notebook to learn how to use the API client.
+Then visit http://localhost:8888/lab/tree/docs/getting_started.ipynb and follow the instructions in the notebook to learn how to use the API client.
 
 If you have any problems, a good first step is to re-start docker compose with the `--build` option so that the api container is re-built from scratch.
 
