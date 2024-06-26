@@ -90,3 +90,7 @@ class Client:
     def get_mentions(self, **args):
         ''' Shorthand accessor for research_outputs/mentions '''
         return self.get('research_outputs/mentions', **args)
+
+    def get_research_outputs(self, **args):
+        ''' Shorthand accessor for research_outputs '''
+        return self.get('research_outputs', **args)
