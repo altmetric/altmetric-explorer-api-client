@@ -25,9 +25,6 @@ for item in response.data:
   print(item)
 ```
 
-See the code in [examples/](examples/) for more examples.  You can run them by
-executing `python -m examples.<example_name>`
-
 ## Installation
 
 A [docker compose](https://docs.docker.com/compose/) file is included to setup a development environment in docker that runs a Jupyter Labs server so you can experiment with the api.
@@ -64,4 +61,11 @@ or, from the host...
 docker compose exec app pytest
 ```
 
+The [autopep8](https://pypi.org/project/autopep8/) linter is installed as well.
+
+You can lint your code by running
+
+```sh
+docker compose exec app autopep8 --in-place --recursive .
+```
 
