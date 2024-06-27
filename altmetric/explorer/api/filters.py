@@ -1,5 +1,5 @@
 class Filters:
-    '''Holds a list of filters and provides methods that transform them
+    '''Holds a list of filters and provides method that transform them
      into query parameters and message digests.'''
 
     def __init__(self):
@@ -39,7 +39,7 @@ class Filters:
         result = []
         for arg, value in sorted(self.items):
             result.append(arg)
-            if type(value) in (list, tuple, set):
+            if isvector(value):
                 for val in value:
                     result.append(val)
             else:
@@ -55,9 +55,13 @@ class Filters:
         """
         result = []
         for arg, value in self.items:
-            if type(value) == list or type(value) == tuple:
+            if isvector(value):
                 for val in value:
                     result.append(f'filter[{arg}][]={val}')
             else:
                 result.append(f'filter[{arg}]={value}')
         return '&'.join(result)
+
+
+def isvector(value):
+    return type(value) in (list, tuple, set)

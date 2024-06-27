@@ -70,7 +70,7 @@ class Response:
         self.raw_response = raw_response
         self.first_page = Page(raw_response)
 
-    @ property
+    @property
     def status_code(self):
         '''Get the status code of the request
 
@@ -79,7 +79,7 @@ class Response:
         '''
         return self.first_page.status_code
 
-    @ property
+    @property
     def data(self):
         '''Returns a lazy sequence of rows from the data returned from the API
 
@@ -91,7 +91,7 @@ class Response:
             yield from page.data
             page = page.next_page()
 
-    @ property
+    @property
     def meta(self):
         '''Returns the meta['response'] data from an API call
 
