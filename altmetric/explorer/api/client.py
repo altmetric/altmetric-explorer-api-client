@@ -71,6 +71,18 @@ class Client:
 
         return Response(requests.get(url))
 
+    def get_attention_summary(self, **args):
+        '''Shorthand accessor for research_outputs/attention'''
+        return self.get('research_outputs/attention', **args)
+
+    def get_demographics(self, **args):
+        '''Shorthand accessor for research_outputs/demographics'''
+        return self.get('research_outputs/demographics', **args)
+
+    def get_journals(self, **args):
+        '''Shorthand accessor for research_outputs/journals'''
+        return self.get('research_outputs/journals', **args)
+
     def get_mention_sources(self, **args):
         ''' Shorthand accessor for research_outputs/mention_sources '''
         return self.get('research_outputs/mention_sources', **args)
@@ -78,3 +90,7 @@ class Client:
     def get_mentions(self, **args):
         ''' Shorthand accessor for research_outputs/mentions '''
         return self.get('research_outputs/mentions', **args)
+
+    def get_research_outputs(self, **args):
+        ''' Shorthand accessor for research_outputs '''
+        return self.get('research_outputs', **args)
