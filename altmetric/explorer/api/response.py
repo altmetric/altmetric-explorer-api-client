@@ -11,8 +11,8 @@ class Page:
         Args:
             raw_response (requests.Response): the raw response returned by `requests`
         '''
-        self.raw_response = raw_response
-        self.json = raw_response.json()
+        self.__raw_response = raw_response
+        self.__json = raw_response.json()
 
     def next_page(self):
         '''Get the next page if there is one
@@ -26,7 +26,7 @@ class Page:
         Returns:
             Page: the next page, or None if this is the last page
         '''
-        url = self.json.get('links', {}).get('next', None)
+        url = self.__json.get('links', {}).get('next', None)
         if url:
             return Page(requests.get(url))
 
@@ -37,7 +37,7 @@ class Page:
         Returns:
             int: HTTP status code
         '''
-        return self.raw_response.status_code
+        return self.__raw_response.status_code
 
     @property
     def data(self):
@@ -46,7 +46,7 @@ class Page:
         Returns:
             list: a list of dictionaries or an empty list if the 'data' key is not found
         '''
-        return self.json.get('data', [])
+        return self.__json.get('data', [])
 
     @property
     def meta(self):
@@ -55,7 +55,7 @@ class Page:
         Returns:
             dict: contents of the meta tag or and empty dictionary if the meta tag is not present
         '''
-        return self.json.get('meta', {})
+        return self.__json.get('meta', {})
 
 
 class Response:
