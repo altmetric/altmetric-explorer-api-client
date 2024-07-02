@@ -16,8 +16,12 @@ def test_api_checks_for_invalid_key_and_secret():
 
 
 @pytest.mark.parametrize("client_fn", [
+    ('get_attention_summary'),
+    ('get_demographics'),
+    ('get_journals'),
     ('get_mention_sources'),
     ('get_mentions'),
+    ('get_research_outputs')
 ])
 def test_getting_data_from_the_api(client_fn, api_client):
     fn = getattr(api_client, client_fn)
@@ -32,6 +36,18 @@ def test_getting_data_from_the_api(client_fn, api_client):
 
 
 @pytest.mark.parametrize("client_fn, expected_keys", [
+    ('get_attention_summary', ('description',
+                               'status',
+                               'total-pages',
+                               'total-results')),
+    ('get_demographics', ('description',
+                          'status',
+                          'total-pages',
+                          'total-results')),
+    ('get_journals', ('description',
+                      'status',
+                      'total-pages',
+                      'total-results')),
     ('get_mention_sources', ('description',
                              'status',
                              'total-mentions',
@@ -40,7 +56,11 @@ def test_getting_data_from_the_api(client_fn, api_client):
     ('get_mentions', ('description',
                       'status',
                       'total-pages',
-                      'total-results'))
+                      'total-results')),
+    ('get_research_outputs', ('description',
+                              'status',
+                              'total-pages',
+                              'total-results'))
 ])
 def test_getting_the_response_block_from_the_meta_block(client_fn, expected_keys, api_client):
     fn = getattr(api_client, client_fn)
