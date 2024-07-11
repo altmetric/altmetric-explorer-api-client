@@ -27,6 +27,16 @@ for item in response.data:
 
 ## Installation
 
+The code can be installed straight from GitHub using pip:
+
+```sh
+pip install https://github.com/altmetric/altmetric-explorer-api-client/tarball/main
+```
+
+...or by adding the url to your `requirements.txt` file and running `pip install -r requirements.txt`.
+
+## Getting Started
+
 A [docker compose](https://docs.docker.com/compose/) file is included to setup a development environment in docker that runs a Jupyter Labs server so you can experiment with the api.
 
 Start it by running:
