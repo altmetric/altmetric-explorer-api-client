@@ -37,15 +37,12 @@ pip install https://github.com/altmetric/altmetric-explorer-api-client/tarball/m
 
 ## Getting Started
 
-A [docker compose](https://docs.docker.com/compose/) file is included to setup a development environment in docker that runs a Jupyter Labs server so you can experiment with the api.
-
+A [docker compose](https://docs.docker.com/compose/) file is included to setup a development environment.
 Start it by running:
 
 ```sh
 docker compose up # add the -d flag to run in the background
 ```
-
-Then visit http://localhost:8888/lab/tree/docs/getting_started.ipynb and follow the instructions in the notebook to learn how to use the API client.
 
 If you have any problems, a good first step is to re-start docker compose with the `--build` option so that the api container is re-built from scratch.
 
