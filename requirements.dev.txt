@@ -1,4 +1,6 @@
+pytest
+pytest-recording
+pytest-mock
+
 autopep8
 mergedeep
-pytest
-pytest-mock
