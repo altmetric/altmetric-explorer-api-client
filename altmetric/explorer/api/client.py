@@ -43,7 +43,7 @@ def decode_value(value):
 FILTER_REGEXP = re.compile(r'filter\[(?P<field>\w+)\]')
 
 
-def api_encode(query_string):
+def create_api_client_query_dict(query_string):
     result = {}
     for key, value in urllib.parse.parse_qs(query_string).items():
         match str(key):
@@ -144,7 +144,7 @@ class Client:
             raise ValueError(
                 f'{url} must be a string or a urllib.parse.ParseResult')
 
-        encoded_query = api_encode(parsed_url.query)
+        encoded_query = create_api_client_query_dict(parsed_url.query)
         path = parsed_url.path.replace('/explorer/api/', '')
         return urllib.parse.unquote(self.urlfor(path, **encoded_query))
 
