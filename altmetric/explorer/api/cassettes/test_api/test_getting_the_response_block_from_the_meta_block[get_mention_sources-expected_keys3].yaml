@@ -1,0 +1,69 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: https://www.altmetric.com/explorer/api/research_outputs/mention_sources?page%5Bsize%5D=1&key=b5f9faabd368491692d4209087ffacae&digest=53534093d456666d5e3fcc8264a21b27acacf494
+  response:
+    body:
+      string: '{"meta":{"query":{"key":"b5f9faabd368491692d4209087ffacae","digest":"53534093d456666d5e3fcc8264a21b27acacf494","page":{"number":1,"size":1}},"response":{"status":"ok","description":"All
+        research outputs sorted by Altmetric Attention Score","total-results":12921780,"total-pages":12921780,"total-mentions":246720746}},"links":{"self":"https://www.altmetric.com/explorer/api/research_outputs/mention_sources?digest=53534093d456666d5e3fcc8264a21b27acacf494\u0026key=b5f9faabd368491692d4209087ffacae\u0026page%5Bnumber%5D=1\u0026page%5Bsize%5D=1","first":"https://www.altmetric.com/explorer/api/research_outputs/mention_sources?digest=53534093d456666d5e3fcc8264a21b27acacf494\u0026key=b5f9faabd368491692d4209087ffacae\u0026page%5Bnumber%5D=1\u0026page%5Bsize%5D=1","last":"https://www.altmetric.com/explorer/api/research_outputs/mention_sources?digest=53534093d456666d5e3fcc8264a21b27acacf494\u0026key=b5f9faabd368491692d4209087ffacae\u0026page%5Bnumber%5D=12921780\u0026page%5Bsize%5D=1","next":"https://www.altmetric.com/explorer/api/research_outputs/mention_sources?digest=53534093d456666d5e3fcc8264a21b27acacf494\u0026key=b5f9faabd368491692d4209087ffacae\u0026page%5Bnumber%5D=2\u0026page%5Bsize%5D=1"},"data":[{"id":"policy:who","type":"profile","attributes":{"profile-type":"policy","name":"World
+        Health Organization","image":null},"relationships":{"country":{"data":{"id":"CH","type":"country"}}},"meta":{"mention-count":829325}}],"included":[{"id":"CH","type":"country","attributes":{"name":"Switzerland"}}]}'
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 8acce62fbffa768f-LHR
+      Cache-Control:
+      - max-age=0, private, must-revalidate
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - upgrade-insecure-requests; frame-ancestors 'self';
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Fri, 02 Aug 2024 09:04:12 GMT
+      ETag:
+      - W/"b0dac52dc5d0ba424917abc7ce4e5877"
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      X-Download-Options:
+      - noopen
+      X-Frame-Options:
+      - SAMEORIGIN
+      - DENY
+      X-Jobs:
+      - https://www.altmetric.com/jobs
+      X-Permitted-Cross-Domain-Policies:
+      - none
+      X-Request-Id:
+      - e860e86a-5a41-42fb-a1c3-39401e170bcb
+      X-Runtime:
+      - '0.039715'
+      X-XSS-Protection:
+      - '0'
+      vary:
+      - Accept, Origin
+    status:
+      code: 200
+      message: OK
+version: 1
