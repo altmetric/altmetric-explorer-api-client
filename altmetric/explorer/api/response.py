@@ -30,6 +30,9 @@ class Page:
         if url:
             return Page(requests.get(url))
 
+    def __repr__(self):
+        return f'Page({self.__raw_response})'
+
     @property
     def status_code(self):
         '''Get the status code of the request to get the page of data
@@ -99,3 +102,6 @@ class Response:
             dict: meta data
         '''
         return self.first_page.meta.get('response', {})
+
+    def __repr__(self):
+        return f'Response({self.raw_response})'
