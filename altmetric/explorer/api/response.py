@@ -30,6 +30,9 @@ class Page:
         if url:
             return Page(requests.get(url))
 
+    def __repr__(self):
+        return f'Page({self.__raw_response})'
+
     @property
     def status_code(self):
         '''Get the status code of the request to get the page of data
@@ -68,7 +71,11 @@ class Response:
             raw_response (requests.response): a response from a call to the api using the `requests` HTTP library
         '''
         self.raw_response = raw_response
-        self.first_page = Page(raw_response)
+        self.text = raw_response.text
+        if raw_response.status_code < 300:
+            self.first_page = Page(raw_response)
+        else:
+            self.first_page = None
 
     @property
     def status_code(self):
@@ -77,7 +84,26 @@ class Response:
         Returns:
             int: HTTP status code
         '''
-        return self.first_page.status_code
+        return self.raw_response.status_code
+
+    @property
+    def ok(self):
+        '''Check if the request succeeded
+
+        Returns:
+            bool: True if the result as in the 200 range was an error
+                  else False
+        '''
+        return self.status_code in range(200, 300)
+
+    @property
+    def failed(self):
+        '''Check if the request failed
+
+        Returns:
+            bool: True if there was an error else False
+        '''
+        return not self.ok
 
     @property
     def data(self):
@@ -86,6 +112,9 @@ class Response:
         Yields:
             dict: a row of data until all rows of all pages have been exhausted
         '''
+        if self.failed:
+            return
+
         page = self.first_page
         while page:
             yield from page.data
@@ -98,4 +127,10 @@ class Response:
         Returns:
             dict: meta data
         '''
+        if self.failed:
+            return
+
         return self.first_page.meta.get('response', {})
+
+    def __repr__(self):
+        return f'Response({self.raw_response})'
