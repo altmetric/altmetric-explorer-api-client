@@ -1,0 +1,86 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: https://www.altmetric.com/explorer/api/research_outputs/mentions?page%5Bsize%5D=1&key=b5f9faabd368491692d4209087ffacae&digest=53534093d456666d5e3fcc8264a21b27acacf494
+  response:
+    body:
+      string: '{"meta":{"query":{"key":"b5f9faabd368491692d4209087ffacae","digest":"53534093d456666d5e3fcc8264a21b27acacf494","page":{"number":1,"size":1}},"response":{"status":"ok","description":"All
+        research outputs sorted by Altmetric Attention Score","total-results":243743199,"total-pages":243743199}},"links":{"self":"https://www.altmetric.com/explorer/api/research_outputs/mentions?digest=53534093d456666d5e3fcc8264a21b27acacf494\u0026key=b5f9faabd368491692d4209087ffacae\u0026page%5Bnumber%5D=1\u0026page%5Bsize%5D=1","first":"https://www.altmetric.com/explorer/api/research_outputs/mentions?digest=53534093d456666d5e3fcc8264a21b27acacf494\u0026key=b5f9faabd368491692d4209087ffacae\u0026page%5Bnumber%5D=1\u0026page%5Bsize%5D=1","last":"https://www.altmetric.com/explorer/api/research_outputs/mentions?digest=53534093d456666d5e3fcc8264a21b27acacf494\u0026key=b5f9faabd368491692d4209087ffacae\u0026page%5Bnumber%5D=243743199\u0026page%5Bsize%5D=1","next":"https://www.altmetric.com/explorer/api/research_outputs/mentions?digest=53534093d456666d5e3fcc8264a21b27acacf494\u0026key=b5f9faabd368491692d4209087ffacae\u0026page%5Bnumber%5D=2\u0026page%5Bsize%5D=1"},"data":[{"id":767456691,"type":"mention","attributes":{"external-id":"twitter.1819161183217504331","post-type":"tweet"},"relationships":{"author":{"data":{"id":"tw:id:260014615","type":"profile"}},"research-outputs":[{"data":{"id":165460163,"type":"research-output"}}]}}],"included":[{"id":"tw:id:260014615","type":"profile","attributes":{"profile-type":"tw"}},{"id":165460163,"type":"research-output","attributes":{"title":"Covid-19
+        infection and vaccination during first trimester and risk of congenital anomalies:
+        Nordic registry based study","identifiers":{"dois":["10.1136/bmj-2024-079364"],"pubmed-ids":["39019547"]},"readers":{"mendeley":1},"dimensions":{"citations":1},"mentions":{"blog":3,"fbwall":1,"msm":20,"tweet":172},"altmetric-score":228,"output-type":"article","historical-mentions":{"1d":84,"3d":84,"1w":85,"1m":165,"3m":165,"6m":165,"1y":165,"at":165},"publication-date":"2024-07-17","badge-url":"https://api.altmetric.com/v1/donut/165460163_240.png","oa-status":false,"oa-type":"closed"},"relationships":{"journal":{"id":"4f6fa4e93cf058f61000245c","type":"journal"},"affiliations":[{"id":"grid.24381.3c","type":"grid-affiliation"},{"id":"grid.418193.6","type":"grid-affiliation"},{"id":"grid.437930.a","type":"grid-affiliation"},{"id":"grid.4714.6","type":"grid-affiliation"},{"id":"grid.5254.6","type":"grid-affiliation"},{"id":"grid.7914.b","type":"grid-affiliation"}],"fields-of-research":[{"id":"32","type":"field-of-research"},{"id":"3215","type":"field-of-research"}],"funders":[{"id":"grid.13985.36","type":"grid-funder"},{"id":"grid.270680.b","type":"grid-funder"},{"id":"grid.452896.4","type":"grid-funder"},{"id":"grid.453316.6","type":"grid-funder"}]}},{"id":"4f6fa4e93cf058f61000245c","type":"journal","attributes":{"title":"British
+        Medical Journal","issns":["02670623","09598138","17561833","14685833","17592151","00071447","0959535X"]}},{"id":"grid.24381.3c","type":"grid-affiliation","attributes":{"name":"Karolinska
+        University Hospital","country":"Sweden","acronym":null}},{"id":"grid.418193.6","type":"grid-affiliation","attributes":{"name":"Norwegian
+        Institute of Public Health","country":"Norway","acronym":"NIPH"}},{"id":"grid.437930.a","type":"grid-affiliation","attributes":{"name":"Statistics
+        Denmark","country":"Denmark","acronym":null}},{"id":"grid.4714.6","type":"grid-affiliation","attributes":{"name":"Karolinska
+        Institutet","country":"Sweden","acronym":"KI"}},{"id":"grid.5254.6","type":"grid-affiliation","attributes":{"name":"University
+        of Copenhagen","country":"Denmark","acronym":"UCPH"}},{"id":"grid.7914.b","type":"grid-affiliation","attributes":{"name":"University
+        of Bergen","country":"Norway","acronym":null}},{"id":"32","type":"field-of-research","attributes":{"name":"Biomedical
+        and Clinical Sciences"}},{"id":"3215","type":"field-of-research","attributes":{"name":"Reproductive
+        Medicine"}},{"id":"grid.13985.36","type":"grid-funder","attributes":{"name":"The
+        Research Council of Norway","country":"Norway","acronym":null}},{"id":"grid.270680.b","type":"grid-funder","attributes":{"name":"European
+        Commission","country":"Belgium","acronym":"EC"}},{"id":"grid.452896.4","type":"grid-funder","attributes":{"name":"European
+        Research Council","country":"Belgium","acronym":"ERC"}},{"id":"grid.453316.6","type":"grid-funder","attributes":{"name":"NordForsk","country":"Norway","acronym":null}}]}'
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 8acce6311aecbd77-LHR
+      Cache-Control:
+      - max-age=0, private, must-revalidate
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - upgrade-insecure-requests; frame-ancestors 'self';
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Fri, 02 Aug 2024 09:04:13 GMT
+      ETag:
+      - W/"4cb14cf29ff424bbf4a27b6aea28a60c"
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      X-Download-Options:
+      - noopen
+      X-Frame-Options:
+      - SAMEORIGIN
+      - DENY
+      X-Jobs:
+      - https://www.altmetric.com/jobs
+      X-Permitted-Cross-Domain-Policies:
+      - none
+      X-Request-Id:
+      - 2e4058aa-606b-4278-a3b7-eb8581c9e077
+      X-Runtime:
+      - '0.064130'
+      X-TweetIDRateLimit-Limit:
+      - '1500000'
+      X-TweetIDRateLimit-Remaining:
+      - '1498389'
+      X-XSS-Protection:
+      - '0'
+      vary:
+      - Accept, Origin
+    status:
+      code: 200
+      message: OK
+version: 1

@@ -52,6 +52,15 @@ class Page:
         return self.__json.get('data', [])
 
     @property
+    def included(self):
+        '''Get the included objects from the page as a list of Python dictionaries
+
+        Returns:
+            list: a list of dictionaries or an empty list if the 'data' key is not found
+        '''
+        return self.__json.get('included', [])
+
+    @property
     def meta(self):
         '''Get the meta tag from the page
 
@@ -118,6 +127,18 @@ class Response:
         page = self.first_page
         while page:
             yield from page.data
+            page = page.next_page()
+
+    @property
+    def included(self):
+        '''Returns a lazy sequence of rows from the included field returned from the API
+
+        Yields:
+            dict: a row of data until all rows of all pages have been exhausted
+        '''
+        page = self.first_page
+        while page:
+            yield from page.included
             page = page.next_page()
 
     @property

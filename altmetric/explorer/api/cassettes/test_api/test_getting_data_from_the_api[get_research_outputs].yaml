@@ -1,0 +1,70 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: https://www.altmetric.com/explorer/api/research_outputs?page%5Bsize%5D=1&key=b5f9faabd368491692d4209087ffacae&digest=53534093d456666d5e3fcc8264a21b27acacf494
+  response:
+    body:
+      string: '{"meta":{"query":{"key":"b5f9faabd368491692d4209087ffacae","digest":"53534093d456666d5e3fcc8264a21b27acacf494","page":{"number":1,"size":1}},"response":{"status":"ok","description":"All
+        research outputs sorted by Altmetric Attention Score","total-results":48467237,"total-pages":48467237}},"links":{"self":"https://www.altmetric.com/explorer/api/research_outputs?digest=53534093d456666d5e3fcc8264a21b27acacf494\u0026key=b5f9faabd368491692d4209087ffacae\u0026page%5Bnumber%5D=1\u0026page%5Bsize%5D=1","first":"https://www.altmetric.com/explorer/api/research_outputs?digest=53534093d456666d5e3fcc8264a21b27acacf494\u0026key=b5f9faabd368491692d4209087ffacae\u0026page%5Bnumber%5D=1\u0026page%5Bsize%5D=1","last":"https://www.altmetric.com/explorer/api/research_outputs?digest=53534093d456666d5e3fcc8264a21b27acacf494\u0026key=b5f9faabd368491692d4209087ffacae\u0026page%5Bnumber%5D=48467237\u0026page%5Bsize%5D=1","next":"https://www.altmetric.com/explorer/api/research_outputs?digest=53534093d456666d5e3fcc8264a21b27acacf494\u0026key=b5f9faabd368491692d4209087ffacae\u0026page%5Bnumber%5D=2\u0026page%5Bsize%5D=1"},"data":[{"id":77704842,"type":"research-output","attributes":{"title":"Report
+        9: Impact of non-pharmaceutical interventions (NPIs) to reduce COVID19 mortality
+        and healthcare demand","identifiers":{"dois":["10.25561/77482"],"handles":["10044/1/77482"]},"readers":{"mendeley":1958},"dimensions":{"citations":0},"mentions":{"blog":262,"fbwall":32,"msm":2000,"policy":56,"qna":3,"tweet":136323,"patent":1,"video":15,"wikipedia":46},"altmetric-score":52841,"output-type":"article","historical-mentions":{"1d":0,"3d":0,"1w":0,"1m":9,"3m":43,"6m":132,"1y":1009,"at":138738},"publication-date":"2020-03-16","badge-url":"https://api.altmetric.com/v1/donut/77704842_240.png","oa-status":false,"oa-type":null}}]}'
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 8acce5d07cd77756-LHR
+      Cache-Control:
+      - max-age=0, private, must-revalidate
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - upgrade-insecure-requests; frame-ancestors 'self';
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Fri, 02 Aug 2024 09:03:57 GMT
+      ETag:
+      - W/"9e9168e26b202dac808c69fb06e628a9"
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      X-Download-Options:
+      - noopen
+      X-Frame-Options:
+      - SAMEORIGIN
+      - DENY
+      X-Jobs:
+      - https://www.altmetric.com/jobs
+      X-Permitted-Cross-Domain-Policies:
+      - none
+      X-Request-Id:
+      - c60f35ae-ec65-4fad-98dc-ad50e578edfc
+      X-Runtime:
+      - '0.061588'
+      X-XSS-Protection:
+      - '0'
+      vary:
+      - Accept, Origin
+    status:
+      code: 200
+      message: OK
+version: 1

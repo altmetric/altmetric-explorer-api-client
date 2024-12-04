@@ -17,6 +17,7 @@ def test_api_checks_for_invalid_key_and_secret():
             'https://www.altmetric.com/explorer/api', None, None)
 
 
+@pytest.mark.vcr(allow_playback_repeats=True)
 @pytest.mark.parametrize("client_fn", [
     ('get_attention_summary'),
     ('get_demographics'),
@@ -37,6 +38,19 @@ def test_getting_data_from_the_api(client_fn, api_client):
         pytest.fail('no data returned')
 
 
+@pytest.mark.vcr(allow_playback_repeats=True)
+def test_getting_included_from_the_api(api_client):
+    response = api_client.get_research_outputs()
+
+    assert response.status_code == 200
+    try:
+        assert len(next(response.included).keys()) > 0
+        assert len(next(response.included).keys()) > 0  # from second page
+    except StopIteration:
+        pytest.fail('no data returned')
+
+
+@pytest.mark.vcr(allow_playback_repeats=True)
 @pytest.mark.parametrize("client_fn, expected_keys", [
     ('get_attention_summary', ('description',
                                'status',
