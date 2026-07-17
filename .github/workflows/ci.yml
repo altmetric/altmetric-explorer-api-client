@@ -1,0 +1,31 @@
+name: CI
+
+# Fast feedback on every change: runs the test suite against the recorded
+# cassettes with the network blocked, so it needs no API credentials.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt -r requirements.dev.txt
+
+      - name: Run tests (offline playback)
+        env:
+          # Any non-empty values work; the Client constructor only rejects None.
+          # Real credentials are never needed here because cassettes are replayed.
+          API_KEY: dummy
+          API_SECRET: dummy
+        run: pytest --block-network

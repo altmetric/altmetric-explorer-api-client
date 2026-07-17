@@ -1,0 +1,35 @@
+name: API drift check
+
+# Re-records the cassettes against the live Explorer API and runs the suite.
+# If the API's endpoints or response shapes have changed, the recorded requests
+# or the assertions fail and this workflow goes red, telling us to update the
+# client. This inverts the maintenance model: instead of remembering to check
+# the API after every change, we only act when this fails.
+#
+# Requires two repository secrets: API_KEY and API_SECRET
+# (an Explorer account's key/secret from https://www.altmetric.com/explorer/settings).
+on:
+  schedule:
+    - cron: "0 6 1 * *" # 06:00 UTC on the 1st of each month
+  workflow_dispatch: {} # allow manual runs from the Actions tab
+
+jobs:
+  rerecord:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt -r requirements.dev.txt
+
+      - name: Re-record cassettes against the live API and run tests
+        env:
+          API_KEY: ${{ secrets.API_KEY }}
+          API_SECRET: ${{ secrets.API_SECRET }}
+        run: pytest --record-mode=rewrite
