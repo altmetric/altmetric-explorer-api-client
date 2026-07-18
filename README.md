@@ -25,14 +25,14 @@ for item in response.data:
   print(item)
 ```
 
-## Calling any endpoint
+## Calling any read endpoint
 
-The client is deliberately not tied to a fixed list of endpoints. `client.get`
+The client is deliberately not tied to a fixed list of read endpoints. `client.get`
 takes an API path plus any filters and query parameters as keyword arguments,
 builds the query string, and calculates the authentication digest for you:
 
 ```python
-# Any path under the Explorer API works, with any filters:
+# Any GET path under the Explorer API works, with any filters:
 response = client.get(
     'research_outputs/mention_sources',
     timeframe='1w',
@@ -40,13 +40,36 @@ response = client.get(
 )
 ```
 
-This means **new Explorer API endpoints and filters work without any change to
-this client**: you do not need to wait for a release or add a method. The
+This means **new Explorer API read endpoints and filters work without any change
+to this client**: you do not need to wait for a release or add a method. The
 `get_*` methods (e.g. `get_mention_sources`) are just thin shorthands for common
 paths; add one if it helps readability, but it is never required. The
 authoritative list of endpoints and filters lives in the
 [Explorer API documentation](https://docs.altmetric.com/explorer-api/), not in
 this repository.
+
+## Creating an identifier list
+
+The Explorer API has one write endpoint,
+[`POST /explorer/api/identifier_lists`](https://docs.altmetric.com/explorer-api/endpoints/identifier-lists/),
+which creates (or finds) a reusable list of identifiers and returns its ID. It
+does not follow the generic `get` pattern (it signs the request differently and
+sends the identifiers in the request body), so the client exposes a dedicated
+method:
+
+```python
+response = client.create_identifier_list('10.1038/nplants.2015.3 altmetric:12345')
+
+if response.ok:
+    # response.resource is the created list: a dict with 'id', 'counts' and 'content'
+    identifier_list_id = response.resource['id']
+
+    # use the list as a filter on any read endpoint:
+    client.get('research_outputs', identifier_list_id=identifier_list_id)
+else:
+    # errors is a list for JSON error envelopes; fall back to the raw body
+    print(response.status_code, response.errors or response.text)
+```
 
 ## Installation
 
