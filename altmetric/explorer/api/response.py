@@ -81,10 +81,15 @@ class Response:
         '''
         self.raw_response = raw_response
         self.text = raw_response.text
+        self.first_page = None
         if raw_response.status_code < 300:
-            self.first_page = Page(raw_response)
-        else:
-            self.first_page = None
+            try:
+                self.first_page = Page(raw_response)
+            except ValueError:
+                # a 2xx response with a non-JSON body (e.g. a proxy
+                # interstitial) leaves first_page None so the accessors degrade
+                # to None/empty instead of raising here
+                pass
 
     @property
     def status_code(self):
@@ -154,7 +159,7 @@ class Response:
         Returns:
             dict: meta data
         '''
-        if self.failed:
+        if self.first_page is None:
             return
 
         return self.first_page.meta.get('response', {})
@@ -171,7 +176,7 @@ class Response:
             dict: the data object, or None if the request failed or the
                 response has no single data object
         '''
-        if self.failed:
+        if self.first_page is None:
             return None
 
         data = self.first_page.data

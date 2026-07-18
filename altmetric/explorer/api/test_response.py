@@ -116,6 +116,20 @@ def test_api_ok_predicate(not_found):
     assert not response.ok
 
 
+def test_a_non_json_success_body_degrades_instead_of_crashing(mocker):
+    raw = mocker.Mock(status_code=200, text='<html>maintenance</html>')
+    raw.json.side_effect = ValueError('no json')
+
+    response = Response(raw)  # must not raise while building the response
+
+    assert response.ok
+    assert response.meta is None
+    assert response.resource is None
+    assert list(response.data) == []
+    assert response.errors == []
+    assert response.text == '<html>maintenance</html>'
+
+
 def test_resource_returns_the_single_data_object():
     raw = FakeApiResponse(200, {
         'meta': {'response': {'status': 'ok'}},
