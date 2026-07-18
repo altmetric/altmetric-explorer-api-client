@@ -6,16 +6,27 @@ import pytest
 DIGEST_JSON_RE = re.compile(r'("digest"\s*:\s*)"[0-9a-f]+"')
 DIGEST_QUERY_RE = re.compile(r"digest=[0-9a-f]+")
 
+# Response headers that must never be written to a cassette in this public repo.
+# The write endpoint (identifier_lists) sets a session cookie on its response.
+SENSITIVE_RESPONSE_HEADERS = ("set-cookie",)
+
 
 def scrub_response(response):
-    """Strip credentials the Explorer API echoes back in response bodies.
+    """Strip credentials from recorded responses.
 
-    The API returns the request's key and digest in the ``meta.query`` block
-    and in the ``links.*`` URLs. ``filter_query_parameters`` only rewrites the
-    request URL, so without this a ``pytest --record-mode=rewrite`` run with
-    real secrets would write a live key and a valid digest into cassette
-    response bodies.
+    Removes sensitive response headers (the session cookie the write endpoint
+    sets) and rewrites the key and digest the API echoes back in the response
+    body (the ``meta.query`` block and the ``links.*`` URLs).
+    ``filter_query_parameters`` / ``filter_post_data_parameters`` only cover the
+    request, so without this a ``pytest --record-mode=rewrite`` run with real
+    secrets would write a live session cookie and a valid key/digest into
+    cassette responses.
     """
+    headers = response.get("headers", {})
+    for name in list(headers):
+        if name.lower() in SENSITIVE_RESPONSE_HEADERS:
+            del headers[name]
+
     body = response.get("body", {})
     raw = body.get("string")
     if raw is None:
@@ -40,9 +51,10 @@ def build_vcr_config():
 
     Keeps API credentials out of recorded cassettes. The Explorer API
     authenticates each request with a public ``key`` and a ``digest`` derived
-    from the account secret, and echoes both back in the response body. Both
-    are replaced with fixed placeholders in the request URL and the response
-    body so that:
+    from the account secret, and echoes both back in the response body. The
+    write endpoint (identifier_lists) also sends them in the request body. All
+    are replaced with fixed placeholders in the request URL, the request body
+    and the response body so that:
 
     * no live credential is ever committed to this public repository, and
     * playback matches regardless of which key/secret ran the test, which lets
@@ -53,6 +65,11 @@ def build_vcr_config():
             ("key", "DUMMY_KEY"),
             ("digest", "DUMMY_DIGEST"),
         ],
+        "filter_post_data_parameters": [
+            ("key", "DUMMY_KEY"),
+            ("digest", "DUMMY_DIGEST"),
+        ],
+        "filter_headers": ["authorization", "cookie"],
         "before_record_response": scrub_response,
     }
 

@@ -126,7 +126,13 @@ class Response:
 
         page = self.first_page
         while page:
-            yield from page.data
+            rows = page.data
+            if isinstance(rows, list):
+                yield from rows
+            else:
+                # a single-object payload (e.g. identifier_lists) — yield it
+                # whole rather than iterating a dict as its keys
+                yield rows
             page = page.next_page()
 
     @property
@@ -152,6 +158,44 @@ class Response:
             return
 
         return self.first_page.meta.get('response', {})
+
+    @property
+    def resource(self):
+        '''Returns the single data object from a non-paginated response.
+
+        Some endpoints (e.g. identifier_lists) return a single object under
+        `data` rather than a list of rows. Use this instead of `data`, which is
+        a generator that assumes `data` is a list.
+
+        Returns:
+            dict: the data object, or None if the request failed or the
+                response has no single data object
+        '''
+        if self.failed:
+            return None
+
+        data = self.first_page.data
+        return data if isinstance(data, dict) else None
+
+    @property
+    def errors(self):
+        '''Returns the errors from an error response envelope.
+
+        Returns:
+            list: the `errors` array, or an empty list if there were none or
+                the body was not a JSON object
+        '''
+        if self.ok:
+            return []
+
+        try:
+            body = self.raw_response.json()
+        except ValueError:
+            return []
+
+        errors = body.get('errors') if isinstance(body, dict) else None
+        # guarantee a list even if the body has a null/object/absent `errors`
+        return errors if isinstance(errors, list) else []
 
     def __repr__(self):
         return f'Response({self.raw_response})'

@@ -4,6 +4,7 @@ import hmac
 import re
 import urllib
 import sys
+from collections.abc import Mapping
 
 import requests
 
@@ -171,3 +172,55 @@ class Client:
     def get_research_outputs(self, **args):
         ''' Shorthand accessor for research_outputs '''
         return self.get('research_outputs', **args)
+
+    def create_identifier_list(self, identifiers):
+        '''Create (or find) a reusable identifier list via POST /identifier_lists.
+
+        This is the only write endpoint in the Explorer API. Unlike get(), the
+        digest is the HMAC-SHA1 of the raw identifiers body keyed by the API
+        secret with hyphens stripped, and key, digest and identifiers are sent
+        in the form-encoded request body (the API rejects identifiers supplied
+        in the query string).
+
+        Args:
+            identifiers (string or iterable): a whitespace-separated list of
+                identifiers, or an iterable of string identifiers which will be
+                joined with newlines. Sequence order is preserved; sets are
+                sorted so the same identifiers always produce the same list.
+                Up to 25,000 tokens.
+
+        Returns:
+            Response: use `.resource` for the created list, a dict with the keys
+                `id`, `counts` and `content`.
+
+        Raises:
+            ValueError: if no identifiers are given.
+            TypeError: if identifiers is not a string or an iterable of
+                strings (e.g. bytes, a mapping, or an iterable with a
+                non-string item).
+        '''
+        if identifiers is None:
+            raise ValueError('identifiers cannot be empty')
+        if isinstance(identifiers, (bytes, bytearray, Mapping)):
+            raise TypeError(
+                'identifiers must be a string or an iterable of strings')
+        if isinstance(identifiers, (set, frozenset)):
+            # sort unordered input so the same identifiers always serialise
+            # identically (the endpoint finds an existing list by exact content)
+            identifiers = sorted(identifiers)
+        if not isinstance(identifiers, str):
+            # join raises TypeError on a non-string item rather than silently
+            # coercing it (e.g. None) into a bogus "None" identifier
+            identifiers = '\n'.join(identifiers)
+        if not identifiers.strip():
+            raise ValueError('identifiers cannot be empty')
+
+        body = {
+            'key': self.api_key,
+            # this endpoint signs the digest with the secret's hyphens stripped,
+            # unlike the read endpoints; this is per the identifier_lists API
+            # docs, so do not "fix" it to match get()'s signing
+            'digest': digest(self.api_secret.replace('-', ''), identifiers),
+            'identifiers': identifiers,
+        }
+        return Response(requests.post(self.api_endpoint + '/identifier_lists', data=body))

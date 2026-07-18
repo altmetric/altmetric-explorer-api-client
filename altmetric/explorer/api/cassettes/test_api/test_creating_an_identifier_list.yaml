@@ -1,0 +1,71 @@
+interactions:
+- request:
+    body: key=DUMMY_KEY&digest=DUMMY_DIGEST&identifiers=10.3133%2Fpp1348+altmetric%3A101427008+10.1007%2Fbf01734359
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, zstd
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '156'
+      Content-Type:
+      - application/x-www-form-urlencoded
+      User-Agent:
+      - python-requests/2.34.2
+    method: POST
+    uri: https://www.altmetric.com/explorer/api/identifier_lists
+  response:
+    body:
+      string: '{"meta":{"response":{"status":"ok"}},"data":{"id":"90b516a9-443f-4979-9b0a-0ed0f9059eb8","counts":{"dois":2,"altmetric_ids":1},"content":"10.3133/pp1348
+        altmetric:101427008 10.1007/bf01734359"}}'
+    headers:
+      CF-RAY:
+      - a1ca57d40c614ffb-BCN
+      Cache-Control:
+      - max-age=0, private, must-revalidate
+      Cf-Cache-Status:
+      - DYNAMIC
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - upgrade-insecure-requests; frame-ancestors 'self';
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Fri, 17 Jul 2026 15:40:05 GMT
+      Etag:
+      - W/"6d926ff7ed33494002adefde49293c86"
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Server:
+      - cloudflare
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept, Origin
+      X-Content-Type-Options:
+      - nosniff
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      - DENY
+      X-Jobs:
+      - https://www.altmetric.com/jobs
+      X-Permitted-Cross-Domain-Policies:
+      - none
+      X-Request-Id:
+      - 520212e2-f370-4499-9ff1-da28164d0b43
+      X-Runtime:
+      - '0.021837'
+      X-Xss-Protection:
+      - '0'
+    status:
+      code: 200
+      message: OK
+version: 1

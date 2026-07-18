@@ -114,3 +114,71 @@ def test_api_ok_predicate(not_found):
 
     assert response.failed
     assert not response.ok
+
+
+def test_resource_returns_the_single_data_object():
+    raw = FakeApiResponse(200, {
+        'meta': {'response': {'status': 'ok'}},
+        'data': {'id': 'abc', 'counts': {'dois': 2}, 'content': '10.1/x'}
+    })
+
+    response = Response(raw)
+
+    assert response.resource == {'id': 'abc',
+                                 'counts': {'dois': 2}, 'content': '10.1/x'}
+
+
+def test_resource_is_none_when_the_request_failed(not_found):
+    assert Response(not_found).resource is None
+
+
+def test_data_yields_a_single_object_payload_whole():
+    # a create response has a dict under `data`; .data must yield the object,
+    # not iterate the dict's keys
+    raw = FakeApiResponse(200, {'data': {'id': 'abc', 'counts': {}}})
+
+    assert list(Response(raw).data) == [{'id': 'abc', 'counts': {}}]
+
+
+def test_resource_is_none_when_the_response_has_no_data_object():
+    raw = FakeApiResponse(200, {'meta': {'response': {'status': 'ok'}}})
+
+    assert Response(raw).resource is None
+
+
+def test_errors_returns_the_error_envelope():
+    raw = FakeApiResponse(400, {
+        'meta': {'response': {'status': 'error'}},
+        'errors': [{'status': '400', 'code': 'invalid_identifier_list'}]
+    })
+
+    assert Response(raw).errors == [
+        {'status': '400', 'code': 'invalid_identifier_list'}]
+
+
+def test_errors_is_empty_when_there_are_none():
+    raw = FakeApiResponse(
+        200, {'meta': {'response': {'status': 'ok'}}, 'data': []})
+
+    assert Response(raw).errors == []
+
+
+def test_errors_is_empty_when_the_body_is_a_non_object_json_value():
+    # a bare JSON array or string parses fine but is not an error envelope
+    assert Response(FakeApiResponse(400, [{'status': '400'}])).errors == []
+    assert Response(FakeApiResponse(400, 'rate limited')).errors == []
+
+
+def test_errors_is_empty_when_the_body_is_not_json(mocker):
+    # a gateway HTML/plain-text error: json() raises, errors must not crash
+    raw = mocker.Mock(status_code=500, text='<html>Bad Gateway</html>')
+    raw.json.side_effect = ValueError('no json')
+
+    assert Response(raw).errors == []
+
+
+def test_errors_is_empty_when_the_errors_value_is_not_a_list():
+    # a null or object `errors` (both hit the same not-a-list guard) -> []
+    raw = FakeApiResponse(400, {'errors': {'code': 'x'}})
+
+    assert Response(raw).errors == []
