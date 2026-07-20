@@ -1,8 +1,10 @@
+import re
 from urllib.parse import urlparse, parse_qs
 
 import pytest
 
 from . import Client
+from .client import digest
 from .env import API_KEY, API_SECRET
 
 
@@ -82,6 +84,62 @@ def test_getting_the_response_block_from_the_meta_block(client_fn, expected_keys
     fn = getattr(api_client, client_fn)
     response = fn(page_size=1)  # return a tiny page so tests run quickly
     assert set(response.meta.keys()) == set(expected_keys)
+
+
+@pytest.mark.parametrize('identifiers, expected_raw', [
+    ('10.1/x altmetric:1', '10.1/x altmetric:1'),
+    (['10.1/x', 'altmetric:1'], '10.1/x\naltmetric:1'),
+    # a set is sorted so the body (and digest) is deterministic
+    ({'altmetric:1', '10.1/x'}, '10.1/x\naltmetric:1'),
+])
+def test_creating_an_identifier_list_signs_the_raw_body(mocker, identifiers, expected_raw):
+    post = mocker.patch('altmetric.explorer.api.client.requests.post')
+    post.return_value.status_code = 200
+    post.return_value.json.return_value = {
+        'meta': {'response': {'status': 'ok'}}, 'data': {}}
+    client = Client('https://www.altmetric.com/explorer/api',
+                    'pub-key', 'my-secret-with-hyphens')
+
+    client.create_identifier_list(identifiers)
+
+    (url,), kwargs = post.call_args
+    assert url == 'https://www.altmetric.com/explorer/api/identifier_lists'
+    assert kwargs['data'] == {
+        'key': 'pub-key',
+        # digest is signed with the secret's hyphens stripped, over the raw body
+        'digest': digest('mysecretwithhyphens', expected_raw),
+        'identifiers': expected_raw,
+    }
+
+
+@pytest.mark.parametrize('identifiers', ['', '   ', [], (), None])
+def test_creating_an_identifier_list_rejects_empty_identifiers(api_client, identifiers):
+    with pytest.raises(ValueError, match=r'(?i)identifiers cannot be empty'):
+        api_client.create_identifier_list(identifiers)
+
+
+@pytest.mark.parametrize('identifiers', [
+    b'10.1/x',           # bytes iterate as ints
+    bytearray(b'10.1/x'),
+    {'10.1/x': 1},       # a mapping iterates as keys
+    ['10.1/x', None],    # a non-string item
+])
+def test_creating_an_identifier_list_rejects_non_string_input(api_client, identifiers):
+    # these would otherwise be silently signed and POSTed as garbage
+    with pytest.raises(TypeError):
+        api_client.create_identifier_list(identifiers)
+
+
+@pytest.mark.vcr
+def test_creating_an_identifier_list(api_client):
+    response = api_client.create_identifier_list(
+        '10.3133/pp1348 altmetric:101427008 10.1007/bf01734359')
+
+    assert response.status_code == 200
+    assert response.meta == {'status': 'ok'}
+    assert re.match(r'^[0-9a-f-]{36}$', response.resource['id'])
+    assert response.resource['counts']['dois'] == 2
+    assert 'content' in response.resource
 
 
 URL_EXAMPLES = [
